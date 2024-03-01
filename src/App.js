@@ -1,25 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react';
+import { fetchComputers } from './services/api'; // Asegúrate de tener esta función en tu archivo api.js
+import ComputerCard from './components/computerCard.js'; // Importa tu componente ComputerCard
 
-function App() {
+const ComputersList = () => {
+  const [computers, setComputers] = useState([]);
+
+  useEffect(() => {
+    const loadComputers = async () => {
+      try {
+        const data = await fetchComputers();
+        setComputers(data);
+      } catch (error) {
+        console.error("Failed to fetch computers:", error);
+      }
+    };
+
+    loadComputers();
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <h2>Lista de Computadoras</h2>
+      <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+        {computers.map(computer => (
+          <ComputerCard key={computer.id} computer={computer} />
+        ))}
+      </div>
+
     </div>
   );
-}
+};
 
-export default App;
+export default ComputersList;
