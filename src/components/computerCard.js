@@ -17,6 +17,36 @@ function ComputerCard({ computer }) {
 
       const serverTotal = 5000;
 
+      const clock = () => {
+        const date = new Date();
+        const hours = date.getHours();
+        const minutes = date.getMinutes();
+        const seconds = date.getSeconds();
+        return `${hours}:${minutes}:${seconds}`;
+      } 
+
+
+      function getTimeDifferenceFromLastUpdate(lastUpdate) {
+        const now = new Date();
+        const lastUpdateDate = new Date(lastUpdate);
+        const differenceInMilliseconds = now - lastUpdateDate; // Diferencia en milisegundos
+        const differenceInSeconds = Math.floor(differenceInMilliseconds / 1000);
+        const differenceInMinutes = Math.floor(differenceInSeconds / 60);
+        const differenceInHours = Math.floor(differenceInMinutes / 60);
+        const differenceInDays = Math.floor(differenceInHours / 24);
+    
+        // Formateamos la salida para que sea más comprensible
+        if (differenceInDays > 0) {
+            return `${differenceInDays} day(s) ago`;
+        } else if (differenceInHours > 0) {
+            return `${differenceInHours} hour(s) ago`;
+        } else if (differenceInMinutes > 0) {
+            return `${differenceInMinutes} minute(s) ago`;
+        } else {
+            return `${differenceInSeconds} second(s) ago`;
+        }
+    }
+
     return (
         <Card style={{ width: '18rem', margin: '1rem' }}>
             <Card.Body>
@@ -31,7 +61,8 @@ function ComputerCard({ computer }) {
                             <p><b>Main Process ID: </b>{computer.main_process_id}</p>
                             <p><b>Memory RAM: </b>{computer.memory_ram} GB</p>
                             <p><b>Last Update: </b>{new Date(computer.last_update).toLocaleString()}</p>
-                            <p><b>Used From Total: ({((computer.disk_total/serverTotal)*100).toFixed(2)}%) </b></p>
+                            <p><b>Used From Total: ({((computer.disk_total/serverTotal)*100).toFixed(2)}% From 5TB) </b></p>
+                            <p><b>Time passed from last update:</b> {getTimeDifferenceFromLastUpdate(computer.last_update)}</p>
                         </div>
                     </Card.Text>
 
