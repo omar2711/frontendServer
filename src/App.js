@@ -1,15 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { fetchComputers } from './services/api'; // Asegúrate de tener esta función en tu archivo api.js
-import ComputerCard from './components/computerCard.js'; // Importa tu componente ComputerCard
+import { fetchComputers } from './services/api'; 
+import ComputerCard from './components/computerCard.js'; 
 
 const ComputersList = () => {
   const [computers, setComputers] = useState([]);
-
-
   const [totalDisk, setTotalDisk] = useState(0);
   const [totalDiskUsed, setTotalDiskUsed] = useState(0);
   const [totalDiskFree, setTotalDiskFree] = useState(0);
-
 
   const clockStyle = {
     color: 'white',
@@ -28,27 +25,25 @@ const ComputersList = () => {
     return `${hours}:${minutes}:${seconds}`;
   }
 
-
-
   useEffect(() => {
     const loadComputers = async () => {
-      // Calcular totales
-      let diskTotalSum = 0;
-      let diskUsedSum = 0;
-      let diskFreeSum = 0;
-      
       try {
-
         const data = await fetchComputers();
+        setComputers(data);
+
+        let diskTotalSum = 0;
+        let diskUsedSum = 0;
+        let diskFreeSum = 0;
+
         data.forEach(computer => {
           diskTotalSum += computer.disk_total;
           diskUsedSum += computer.disk_used;
           diskFreeSum += computer.disk_free;
         });
+
         setTotalDisk(diskTotalSum);
         setTotalDiskUsed(diskUsedSum);
         setTotalDiskFree(diskFreeSum);
-        setComputers(data);
       } catch (error) {
         console.error("Failed to fetch computers:", error);
       }
@@ -56,6 +51,27 @@ const ComputersList = () => {
 
     loadComputers();
   }, []);
+
+  // Función para manejar la eliminación de un servidor
+  const handleDeleteServer = (serverId) => {
+    const updatedComputers = computers.filter(computer => computer.id !== serverId);
+    setComputers(updatedComputers);
+
+    // Recalcular los totales
+    let diskTotalSum = 0;
+    let diskUsedSum = 0;
+    let diskFreeSum = 0;
+
+    updatedComputers.forEach(computer => {
+      diskTotalSum += computer.disk_total;
+      diskUsedSum += computer.disk_used;
+      diskFreeSum += computer.disk_free;
+    });
+
+    setTotalDisk(diskTotalSum);
+    setTotalDiskUsed(diskUsedSum);
+    setTotalDiskFree(diskFreeSum);
+  };
 
   return (
     <div>
@@ -72,10 +88,8 @@ const ComputersList = () => {
       <h2>Lista de Computadoras</h2>
       <div style={{ display: 'flex', flexWrap: 'wrap' }}>
         {computers.map(computer => (
-          <ComputerCard key={computer.id} computer={computer} />
-          
+          <ComputerCard key={computer.id} computer={computer} onDelete={handleDeleteServer} />
         ))}
-
       </div>
 
     </div>
@@ -83,3 +97,4 @@ const ComputersList = () => {
 };
 
 export default ComputersList;
+
